@@ -43,108 +43,23 @@ export default defineConfig({
           { text: 'Kho hàng', link: '/warehouse' },
         ],
       },
-      {
-        text: 'CRM',
-        items: [
-          { text: 'Tổng quan', link: '/crm' },
-        ],
-      },
-      {
-        text: 'Bán hàng',
-        items: [
-          { text: 'Tổng quan', link: '/selling' },
-        ],
-      },
-      {
-        text: 'Mua hàng',
-        items: [
-          { text: 'Tổng quan', link: '/buying' },
-        ],
-      },
-      {
-        text: 'Sản xuất',
-        items: [
-          { text: 'Tổng quan', link: '/manufacturing' },
-        ],
-      },
-      {
-        text: 'Hỗ trợ',
-        items: [
-          { text: 'Tổng quan', link: '/support' },
-        ],
-      },
-      {
-        text: 'Tài sản',
-        items: [
-          { text: 'Tổng quan', link: '/asset' },
-        ],
-      },
-      {
-        text: 'Website',
-        items: [
-          { text: 'Tổng quan', link: '/website' },
-        ],
-      },
-      {
-        text: 'Tự động hóa',
-        items: [
-          { text: 'Tổng quan', link: '/automation' },
-        ],
-      },
-      {
-        text: 'Quản lý chất lượng',
-        items: [
-          { text: 'Tổng quan', link: '/quality-management' },
-        ],
-      },
-      {
-        text: 'Nhà hàng',
-        items: [
-          { text: 'Tổng quan', link: '/restaurant' },
-        ],
-      },
-      {
-        text: 'Vùng miền',
-        items: [
-          { text: 'Tổng quan', link: '/regional' },
-        ],
-      },
-      {
-        text: 'Email',
-        items: [
-          { text: 'Tổng quan', link: '/email' },
-        ],
-      },
-      {
-        text: 'In ấn',
-        items: [
-          { text: 'Tổng quan', link: '/printing' },
-        ],
-      },
-      {
-        text: 'Dữ liệu',
-        items: [
-          { text: 'Tổng quan', link: '/data' },
-        ],
-      },
-      {
-        text: 'Phân quyền',
-        items: [
-          { text: 'Tổng quan', link: '/permissions' },
-        ],
-      },
-      {
-        text: 'Thiết lập hệ thống',
-        items: [
-          { text: 'Tổng quan', link: '/system-settings' },
-        ],
-      },
-      {
-        text: 'Người dùng',
-        items: [
-          { text: 'Thêm người dùng', link: '/adding-users' },
-        ],
-      },
+      { text: 'CRM', link: '/crm' },
+      { text: 'Bán hàng', link: '/selling' },
+      { text: 'Mua hàng', link: '/buying' },
+      { text: 'Sản xuất', link: '/manufacturing' },
+      { text: 'Hỗ trợ', link: '/support' },
+      { text: 'Tài sản', link: '/asset' },
+      { text: 'Website', link: '/website' },
+      { text: 'Tự động hóa', link: '/automation' },
+      { text: 'Quản lý chất lượng', link: '/quality-management' },
+      { text: 'Nhà hàng', link: '/restaurant' },
+      { text: 'Vùng miền', link: '/regional' },
+      { text: 'Email', link: '/email' },
+      { text: 'In ấn', link: '/printing' },
+      { text: 'Dữ liệu', link: '/data' },
+      { text: 'Phân quyền', link: '/permissions' },
+      { text: 'Thiết lập hệ thống', link: '/system-settings' },
+      { text: 'Người dùng', link: '/adding-users' },
       {
         text: 'Khu vực khác',
         items: [
