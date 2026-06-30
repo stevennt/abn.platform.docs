@@ -1,0 +1,1 @@
+import{_ as n,o as t,c as i,a0 as a}from"./chunks/framework.jwovEGr5.js";const s=JSON.parse('{"title":"CRM","description":"","frontmatter":{"title":"CRM"},"headers":[],"relativePath":"crm.md","filePath":"crm.md"}'),c={name:"crm.md"};function e(o,h,l,r,g,d){return t(),i("div",null,[...h[0]||(h[0]=[a("",38)])])}const p=n(c,[["render",e]]);export{s as __pageData,p as default};
