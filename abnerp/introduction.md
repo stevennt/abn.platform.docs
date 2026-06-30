@@ -48,8 +48,6 @@ ABNERP cung cấp hơn **12 mô-đun tính năng** chính:
 | **Đa công ty** | Quản lý nhiều công ty trên cùng một hệ thống |
 | **Đa tiền tệ** | Hỗ trợ giao dịch đa tiền tệ, tỷ giá hối đoái |
 
-Xem hướng dẫn chi tiết tại trang [Thiết lập ABNERP](/abnerp/setting-up).
-
 ## Cộng đồng
 
 ABNERP có một cộng đồng người dùng và nhà phát triển năng động. Bạn có thể:
