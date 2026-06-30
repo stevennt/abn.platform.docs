@@ -4,7 +4,7 @@ title: ABNERP - Hệ thống Hoạch định Nguồn lực Doanh nghiệp
 
 # ABNERP - Hệ thống Hoạch định Nguồn lực Doanh nghiệp
 
-Chào mừng bạn đến với ABNERP - giải pháp **Hoạch định Nguồn lực Doanh nghiệp (ERP)** mã nguồn mở toàn diện, được xây dựng trên nền tảng Frappe Framework. ABNERP giúp doanh nghiệp vừa và nhỏ quản lý toàn bộ hoạt động vận hành trên một nền tảng thống nhất.
+Chào mừng bạn đến với ABNERP - giải pháp **Hoạch định Nguồn lực Doanh nghiệp (ERP)** mã nguồn mở toàn diện, giúp doanh nghiệp vừa và nhỏ quản lý toàn bộ hoạt động vận hành trên một nền tảng thống nhất.
 
 ## Tính năng chính
 

@@ -10,14 +10,6 @@ Việc thiết lập một hệ thống ERP có thể là thách thức đối v
 
 Trước khi bắt đầu sử dụng ABNERP, bạn cần thiết lập một số danh mục dữ liệu nền tảng. Các danh mục này là những khối xây dựng cơ bản cho toàn bộ hệ thống.
 
-## Trang web ABNERP
-
-Truy cập [https://erp.abnasia.org](https://erp.abnasia.org) để:
-
-- **Dùng thử miễn phí**: Đăng ký dùng thử ngay, không cần thẻ tín dụng
-- **Frappe Cloud**: Triển khai trên nền tảng Frappe Cloud — dịch vụ quản lý hosting chuyên nghiệp
-- **Tải về**: Tải mã nguồn để tự triển khai trên máy chủ riêng
-
 ## Các danh mục chính
 
 Sau khi đăng nhập vào hệ thống ABNERP, bạn cần thiết lập các danh mục dữ liệu cơ bản sau:

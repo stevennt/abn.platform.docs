@@ -52,23 +52,6 @@ ABNERP cung cấp hơn **12 mô-đun tính năng** chính:
 | **Đa công ty** | Quản lý nhiều công ty trên cùng một hệ thống |
 | **Đa tiền tệ** | Hỗ trợ giao dịch đa tiền tệ, tỷ giá hối đoái |
 
-## Bên dưới nắp capo
-
-ABNERP được xây dựng trên nền tảng công nghệ vững chắc:
-
-- **Frappe Framework**: Framework web toàn diện bằng Python và JavaScript, cung cấp hệ thống ORM, API, xác thực, và quản lý quyền truy cập.
-- **Frappe UI**: Bộ thư viện giao diện người dùng hiện đại, được xây dựng với Vue.js, mang lại trải nghiệm mượt mà và phản hồi nhanh.
-
-Điều này có nghĩa là ABNERP không chỉ là một ứng dụng ERP — nó là một nền tảng có thể mở rộng và tùy biến để đáp ứng nhu cầu đặc thù của doanh nghiệp bạn.
-
-## Cài đặt
-
-Bạn có thể bắt đầu sử dụng ABNERP theo một trong các cách sau:
-
-1. **Dùng thử miễn phí**: Đăng ký tài khoản dùng thử tại [erp.abnasia.org](https://erp.abnasia.org)
-2. **Frappe Cloud**: Triển khai trên nền tảng Frappe Cloud quốc tế
-3. **Tự triển khai**: Cài đặt trên máy chủ riêng của bạn
-
 Xem hướng dẫn chi tiết tại trang [Thiết lập ABNERP](/abnerp/setting-up).
 
 ## Cộng đồng
