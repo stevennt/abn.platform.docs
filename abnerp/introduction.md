@@ -65,7 +65,7 @@ ABNERP được xây dựng trên nền tảng công nghệ vững chắc:
 
 Bạn có thể bắt đầu sử dụng ABNERP theo một trong các cách sau:
 
-1. **Dùng thử miễn phí**: Đăng ký tài khoản dùng thử tại [abnerp.vn](https://abnerp.vn)
+1. **Dùng thử miễn phí**: Đăng ký tài khoản dùng thử tại [erp.abnasia.org](https://erp.abnasia.org)
 2. **Frappe Cloud**: Triển khai trên nền tảng Frappe Cloud quốc tế
 3. **Tự triển khai**: Cài đặt trên máy chủ riêng của bạn
 
