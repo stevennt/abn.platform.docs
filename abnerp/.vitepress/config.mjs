@@ -4,7 +4,7 @@ export default defineConfig({
   lang: 'vi-VN',
   ignoreDeadLinks: true,
   title: 'ABNERP',
-  description: 'Tài liệu hướng dẫn sử dụng ABNERP - Hệ thống Hoạch định Nguồn lực Doanh nghiệp Mã nguồn Mở',
+  description: 'Tài liệu hướng dẫn sử dụng ABNERP - Hệ thống Hoạch định Nguồn lực Doanh nghiệp',
   themeConfig: {
     logo: '/logo.png',
     siteTitle: 'ABNERP',
@@ -155,11 +155,16 @@ export default defineConfig({
         ],
       },
     ],
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/stevennt/abn.platform.docs' },
-    ],
+    outlineTitle: 'Trên trang này',
+    docFooter: {
+      prev: 'Trang trước',
+      next: 'Trang tiếp',
+    },
+    lastUpdatedText: 'Cập nhật lần cuối',
+    darkModeSwitchLabel: 'Giao diện',
+    sidebarMenuLabel: 'Danh mục',
+    returnToTopLabel: 'Quay lại đầu trang',
     footer: {
-      message: 'Phát hành theo Giấy phép MIT',
       copyright: 'Bản quyền © 2026 ABNERP',
     },
   },

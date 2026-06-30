@@ -6,7 +6,7 @@ title: Giới thiệu về ABNERP
 
 ## ABNERP là gì?
 
-**ABNERP** là phần mềm quản lý doanh nghiệp mã nguồn mở, được thiết kế để giúp doanh nghiệp vừa và nhỏ vận hành hiệu quả hơn. ABNERP cung cấp một bộ công cụ toàn diện cho phép bạn:
+**ABNERP** là phần mềm quản lý doanh nghiệp toàn diện, được thiết kế để giúp doanh nghiệp vừa và nhỏ vận hành hiệu quả hơn. ABNERP cung cấp một bộ công cụ đầy đủ cho phép bạn:
 
 - **Theo dõi tồn kho** — Quản lý hàng hóa, nguyên vật liệu, thành phẩm theo thời gian thực
 - **Quản lý tài chính** — Hạch toán kế toán, quản lý công nợ, dòng tiền
@@ -20,10 +20,6 @@ ABNERP đóng vai trò như **hệ thống thần kinh trung ương** cho doanh 
 ### Bộ công cụ hoàn chỉnh
 
 Không cần tích hợp nhiều phần mềm rời rạc. ABNERP cung cấp tất cả các mô-đun nghiệp vụ thiết yếu trong một nền tảng duy nhất: kế toán, bán hàng, mua hàng, kho vận, sản xuất, nhân sự, CRM và hỗ trợ.
-
-### Không bị khóa nhà cung cấp
-
-Là phần mềm mã nguồn mở (GNU General Public License v3), bạn hoàn toàn làm chủ dữ liệu và hệ thống của mình. Bạn có thể tự triển khai, thuê đối tác hoặc sử dụng dịch vụ đám mây.
 
 ### Dễ sử dụng
 
@@ -59,6 +55,5 @@ Xem hướng dẫn chi tiết tại trang [Thiết lập ABNERP](/abnerp/setting
 ABNERP có một cộng đồng người dùng và nhà phát triển năng động. Bạn có thể:
 
 - Đặt câu hỏi trên diễn đàn cộng đồng
-- Đóng góp mã nguồn trên GitHub
 - Tham gia các nhóm thảo luận trực tuyến
 - Đề xuất tính năng và báo cáo lỗi
