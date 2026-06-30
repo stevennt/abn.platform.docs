@@ -28,6 +28,7 @@ export default defineConfig({
           { text: 'Số dư đầu kỳ', link: '/opening-balance' },
         ],
       },
+      { text: 'Quy trình Triển khai', link: '/implementation-process' },
       { text: 'Công ty Thương mại', link: '/trading-company' },
       {
         text: 'Kế toán',
