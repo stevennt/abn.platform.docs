@@ -1,14 +1,13 @@
-# ABN Real Estate (Đất Cát) — Product Specification
+# ABN Real Estate (Đất Cát) — Frappe-Native Product Specification
 
-> **Repo:** `abn.app.realestate`
-> **Status:** Active | **Language:** Dart (Flutter)
-> **Issues:** 60+ | **GitHub:** https://github.com/stevennt/abn.app.realestate
+> **Target Backend:** Frappe CRM (rebranded as Real Estate CRM) + ERPNext
+> **Positioning:** Vietnam-focused real estate operating system — one shared asset and transaction model expressed through six role-specific workspaces
 
 ---
 
 ## 1. Product Identity
 
-**ABN Real Estate (Đất Cát)** — a Vietnam-focused real estate operating system with one shared asset and transaction model expressed through six canonical role-specific workspaces: **Owner, Resident, Broker, Operator, Investor, Developer**.
+**ABN Real Estate (Đất Cát)** — a Vietnam-focused real estate operating system built on Frappe. The CRM module (forked from [frappe/crm](https://github.com/frappe/crm)) powers lead-to-deal brokerage workflows. ERPNext powers the back-office: property assets, finance, maintenance, contracts, and project management. Six canonical role workspaces: **Owner, Resident, Broker, Operator, Investor, Developer**.
 
 **Positioning:** *"One property, one transaction history, many role-specific workspaces."*
 
@@ -21,18 +20,56 @@
 
 ## 3. Target Users
 
-| Role | Vietnamese | Core Job |
-|---|---|---|
-| **Owner** | Chủ nhà | Choose economic lane per property: sell, rent direct, or outsource. Needs strategy visibility, delegated oversight, approvals, finance pulse |
-| **Resident** | Cư dân | Run housing lifecycle: discover, inspect, apply, sign, pay, request service, manage household |
-| **Broker** | Môi giới | Move supply and demand toward closing: source owners, manage private pool, qualify leads, negotiate, close, collect commission |
-| **Operator** | Quản lý vận hành | Run day-to-day rental operations: leasing, rent roll, maintenance, resident follow-through, owner reporting |
-| **Investor** | Nhà đầu tư | Scan opportunities, track portfolio, compare deals, monitor developer releases, assess risk flags |
-| **Developer** | Chủ đầu tư | Manage project workspace, release inventory, update brokers, track permits, publish progress |
+| Role | Vietnamese | Core Job | Frappe Mapping |
+|---|---|---|---|
+| **Owner** | Chủ nhà | Sell, rent direct, or outsource. Needs oversight, approvals, finance pulse | CRM `Customer` + Portal |
+| **Resident** | Cư dân | Discover, inspect, apply, sign, pay, request service | CRM `Contact` + `Customer` |
+| **Broker** | Môi giới | Source owners, manage pool, qualify leads, negotiate, close, collect commission | CRM `Lead` → `Opportunity` → `Deal` |
+| **Operator** | Quản lý vận hành | Leasing, rent roll, maintenance, resident management, owner reporting | ERPNext `Property Manager` |
+| **Investor** | Nhà đầu tư | Scan opportunities, track portfolio, monitor releases, assess risk | ERPNext `Project` + custom |
+| **Developer** | Chủ đầu tư | Project workspace, release inventory, permits, progress publishing | ERPNext `Project` + `Task` |
 
 ## 4. Platform Architecture
 
-### 4.1 Six-Role Operating Model
+### 4.1 Frappe Module Stack
+
+```
+abn_realestate (custom Frappe app)
+│
+├── crm (fork: rebranded as realestate_crm)
+│   ├── Lead          → Broker lead capture, owner sourcing
+│   ├── Opportunity   → Deal pipeline, viewing-to-negotiation
+│   ├── Deal          → Closed sale/lease with commission split
+│   ├── Customer      → Owner, Resident, Buyer profiles
+│   ├── Contact       → Household members, co-buyers, tenants
+│   ├── Communication → Zalo/SMS/email integration
+│   └── CRM Settings  → Role-based assignment rules
+│
+├── erpnext (back-office)
+│   ├── Asset         → Property units, buildings, land parcels
+│   ├── Project       → Developer milestones, investor portfolios
+│   ├── Task          → Maintenance work orders, compliance items
+│   ├── Contract      → Lease agreements, listing agreements
+│   ├── Maintenance Schedule / Visit
+│   ├── Sales Invoice → Rent collection, commission payouts
+│   ├── Payment Entry → Deposits, fees, settlements
+│   ├── Journal Entry → Owner payouts, investor distributions
+│   └── Buying        → Vendor procurement (maintenance supplies)
+│
+├── custom modules
+│   ├── Property management   → Listing, viewing, offer, tenancy
+│   ├── Building management   → Portfolio dashboard, vendors, events
+│   └── Vietnam compliance    → Sổ đỏ, sổ hồng, permits, foreign quota
+│
+└── portals
+    ├── Owner Portal     → Strategy board, finance pulse, approvals
+    ├── Resident Portal  → Rent pay, service requests, documents
+    ├── Broker Portal    → Pipeline, commissions, private pool
+    ├── Operator Portal  → Leasing queue, rent roll, maintenance
+    └── Public Portal    → Property marketplace, search, agent contact
+```
+
+### 4.2 Six-Role Operating Model
 
 ```
                       ┌─────────────────────────────┐
@@ -52,196 +89,250 @@
      Finance   Service     Commission Vendors  Risk Flags  Handoff
 ```
 
-### 4.2 Tech Stack
+### 4.3 Data Model — Key DocTypes
 
-| Layer | Technology |
-|---|---|
-| Framework | Flutter (latest stable) |
-| State Management | flutter_bloc (primary), provider (legacy) |
-| Navigation | go_router |
-| DI | get_it + injectable |
-| Network | dio with interceptors (logging, auth) |
-| Local Database | drift (SQLite) |
-| Local Storage | shared_preferences, flutter_secure_storage |
-| Serialization | json_annotation, freezed_annotation |
-| Maps | Flutter Map with Leaflet |
-| Charts | fl_chart |
-| Backend | RESTful API (Axum — `abn.apiserver.rust.axum`) |
-| Auth | JWT authentication |
-| Sync | Offline-first repository SSOT with dirty queues |
-| Architecture | Feature-First Clean Architecture + SSOT pattern |
-
-### 4.3 App Architecture
-
-```
-lib/
-├── config/              # Configuration files and constants
-├── core/                # Shared infrastructure
-│   ├── config/         # Environment and global config
-│   ├── database/       # Local database setup (Drift)
-│   ├── di/             # Dependency Injection
-│   ├── network/        # API client + interceptors
-│   ├── repositories/   # Repository pattern + SsotStore<T>
-│   ├── router/         # GoRouter configuration
-│   ├── tenant/         # Workspace/tenant context
-│   └── themes/         # Material 3 theming
-├── features/
-│   ├── auth/           # Authentication
-│   ├── property/       # Property management
-│   ├── finance/        # Financial tracking
-│   ├── maintenance/    # Maintenance requests
-│   ├── contracts/      # Contract management
-│   ├── crm/            # Customer relationship
-│   ├── home/           # Role-aware dashboards
-│   ├── public/         # Public marketplace
-│   ├── owner/          # Owner strategy & oversight
-│   ├── operator/       # Operator leasing & maintenance
-│   ├── investor/       # Investor portfolio & diligence
-│   ├── developer/      # Developer releases & updates
-│   ├── agent/          # Broker workflows
-│   └── role/           # Role management & config
-├── services/            # Global services
-├── sync/                # Data sync infrastructure
-└── main.dart            # App entry point
-```
-
-### 4.4 SSOT Architecture
-
-The app implements a **Single Source of Truth (SSOT)** architecture:
-1. Repository is the **only** source of data
-2. All UI components subscribe to repository streams
-3. All mutations flow through repositories
-4. Each entity type has one repository singleton
-5. Entity IDs passed between screens, not entire objects
-6. Persistence and sync are support layers under the repository
+| DocType | Source | Purpose |
+|---|---|---|
+| **Property** | Custom | Core asset: address, legal docs, owner, type, units |
+| **Property Unit** | Custom | Individual unit within a property (apartment, floor, lot) |
+| **Property Listing** | Custom | For-sale/for-rent listing with visibility (private/pool/public) |
+| **Viewing Request** | Custom | Tour scheduling, access rules, feedback |
+| **Offer** | Custom | Buyer/tenant offer with negotiation stages |
+| **Deal** | CRM | Closed sale, lease, or rental agreement |
+| **Commission Split** | Custom | Co-broker splits, tiers, payout tracking |
+| **Lead** | CRM | Owner sourcing, buyer inquiry, tenant lead |
+| **Opportunity** | CRM | Deal pipeline stage tracking |
+| **Customer** | CRM | Owner, resident, buyer, investor profiles |
+| **Contact** | CRM | Household members, co-buyers, emergency contacts |
+| **Asset** | ERPNext | Property as a financial asset |
+| **Project** | ERPNext | Developer projects, investor portfolios |
+| **Task** | ERPNext | Maintenance work orders, permit tasks |
+| **Contract** | ERPNext | Lease agreements, listing agreements |
+| **Maintenance Schedule** | ERPNext | Scheduled maintenance |
+| **Sales Invoice** | ERPNext | Rent collection, commission invoicing |
+| **Payment Entry** | ERPNext | Deposits, rent payments, payouts |
+| **Building** | Custom | Building portfolio with vendor/event management |
+| **Vendor** | ERPNext | Maintenance contractors, service providers |
 
 ## 5. Key Feature Modules
 
-### 5.1 Owner Module
-- **Strategy selection:** Sell, Direct Rent, or Outsource per property
-- **Delegated oversight:** Approvals queue, handoff artifacts
-- **Finance pulse:** Income/expense tracking, payment reconciliation
-- **Compliance inbox:** Document review, regulatory compliance
-- **Report packs:** Owner-facing performance reports
+### 5.1 Owner Module (CRM `Customer` + Portal + ERPNext `Asset`)
+- **Strategy selection:** Sell, Direct Rent, or Outsource per property — stored as Property DocType workflow state
+- **Delegated oversight:** Approvals queue via Frappe workflow assignment
+- **Finance pulse:** ERPNext dashboard showing rent collection, expenses, payouts
+- **Compliance inbox:** Document review requests, regulatory deadline alerts
+- **Report packs:** Scheduled PDF reports via Frappe Report Builder
 
-### 5.2 Resident Module
-- **Discovery:** Public marketplace, search/filter, saved homes
-- **Inspections:** Viewing requests, scheduling, access rules
-- **Payments:** Rent collection, auto-pay, receipt history
-- **Service requests:** Maintenance reporting, status tracking
-- **Household management:** Move-in, household members, access
+### 5.2 Resident Module (CRM `Contact` + `Customer` + Portal)
+- **Discovery:** Public marketplace via Website + custom Property Listing Web Template
+- **Inspections:** Viewing requests through CRM Communication + custom Viewing DocType
+- **Payments:** Rent collection via ERPNext Sales Invoice + Payment Entry
+- **Service requests:** Maintenance dispatch through ERPNext Maintenance Visit
+- **Household management:** CRM Contact grouping for household members
 
-### 5.3 Broker Module
-- **Owner sourcing:** Lead capture, listing agreement
-- **Private pool:** Shareable/public/private listing visibility
-- **Lead qualification:** Budget, urgency, legal fit scoring
-- **Viewing coordination:** Scheduling, access rules, feedback
-- **Negotiation:** Offer/term tracking, multi-party negotiation board
-- **Commission tracking:** Calculated, pending, collected states
-- **Co-brokering:** Internal sharing, split tracking
+### 5.3 Broker Module (CRM: `Lead` → `Opportunity` → `Deal`)
+- **Owner sourcing:** Lead capture with property details
+- **Private pool:** Listing visibility toggle (private/shared/public) on Property Listing
+- **Lead qualification:** CRM Opportunity with custom scoring fields (budget, urgency, legal fit)
+- **Viewing coordination:** Viewing Request DocType with calendar sync
+- **Negotiation:** Offer DocType with multi-stage workflow (offer → counter → accepted → deposit)
+- **Commission tracking:** Commission Split DocType linked to Deal, with tier calculation
+- **Co-brokering:** Deal-level co-broker assignments with split percentages
 
-### 5.4 Operator Module
-- **Leasing queue:** Application review, lease signing
-- **Rent roll:** Occupancy view, due/overdue tracking
-- **Maintenance dispatch:** Work orders, vendor assignment, SLA
-- **Resident roster:** Centralized tenant visibility
-- **Owner reporting:** Packaged report generation
-- **Exception board:** Delinquency, SLA breaches, escalations
+### 5.4 Operator Module (ERPNext + Custom)
+- **Leasing queue:** Workflow on Deal (lease type) with application review stages
+- **Rent roll:** Report showing occupancy, due dates, overdue amounts
+- **Maintenance dispatch:** Maintenance Visit + Task with vendor assignment and SLA
+- **Resident roster:** Customer/Contact with property unit assignment
+- **Owner reporting:** Scheduled report generation via Frappe Email Alert
+- **Exception board:** Dashboard showing delinquency, SLA breaches, escalations
 
-### 5.5 Investor Module
-- **Opportunity scanning:** Market dashboard, deal comparison
-- **Portfolio tracking:** Holdings, performance, risk flags
-- **Developer releases:** Release monitoring, unit comparison
-- **Diligence blockers:** Document gaps, compliance review
+### 5.5 Investor Module (ERPNext `Project` + Custom)
+- **Opportunity scanning:** Dashboard with market data, deal comparisons
+- **Portfolio tracking:** Project with custom fields for holdings, performance, risk flags
+- **Developer releases:** Project milestone completion with Task breakdown
+- **Diligence blockers:** Custom DocType for document gaps, compliance review items
 
-### 5.6 Developer Module
-- **Project workspace:** Inventory management, milestone tracking
-- **Broker updates:** Structured communication, release notifications
-- **Permit tracking:** Compliance document management
-- **Progress publishing:** Public project timeline updates
-- **Post-sale handoff:** Owner/resident/operator transition
+### 5.6 Developer Module (ERPNext `Project` + `Task`)
+- **Project workspace:** Project with milestones, Gantt chart, inventory allocation
+- **Broker updates:** Structured communications via CRM Communication + Email Campaign
+- **Permit tracking:** Tasks with compliance document uploads and deadlines
+- **Progress publishing:** Website + Email Alert for public project timeline
+- **Post-sale handoff:** Workflow transitioning project units to Owner/Operator
 
-### 5.7 Public Marketplace
-- Property search with advanced filters
-- Featured listings, map-based discovery
-- Public property details with trust indicators
-- Saved properties, watchlists, alerts
-- Agent contact and inquiry
+### 5.7 Public Marketplace (Frappe Website)
+- Property search with filters — custom Web Template + JS
+- Featured listings, map-based discovery (Leaflet integration)
+- Saved properties, watchlists, alerts — via Frappe Notification
+- Agent contact and inquiry — CRM Lead creation from public form
+- Property details with trust indicators (legal status, verification badges)
 
-### 5.8 Cross-Cutting
-- **Finance:** Unified income/expense across all roles, payment tracking, reconciliation
-- **Contracts:** Templates, e-sign workflow, signing persistence
-- **Maintenance:** Work orders, vendor management, spend approvals
-- **Documents:** Vietnam-specific taxonomy (sổ đỏ, sổ hồng, permits)
-- **Notifications:** In-app, push, email, Zalo integration
-- **Analytics:** Role-specific dashboards, exportable reports
+### 5.8 Building Management Module (Custom)
+- **Portfolio dashboard:** Multi-building metrics with sortable comparisons
+- **Vendor management:** ERPNext Vendor with performance tracking, Work Order integration
+- **Events calendar:** Event DocType with list/calendar views, RSVP, recurring support
+
+### 5.9 Cross-Cutting
+- **Finance:** ERPNext Sales Invoice, Payment Entry, Journal Entry across all roles
+- **Contracts:** Frappe Contract DocType with templates and e-sign (via third-party API)
+- **Maintenance:** ERPNext Maintenance Schedule + Visit + Task
+- **Documents:** Custom Document DocType with Vietnam taxonomy (sổ đỏ, sổ hồng, permits)
+- **Notifications:** Frappe Email Alert + custom Zalo/SMS integration
+- **Analytics:** Frappe Report Builder + Dashboard per role
 
 ## 6. Vietnam-Native Features
 
-| Feature | Detail |
+| Feature | Implementation |
 |---|---|
-| **Currency** | VND with local shorthand (triệu, tỷ) |
-| **Address** | Province/district/ward/project/block/unit hierarchy |
-| **Legal docs** | Sổ đỏ, sổ hồng, permits, notarization, foreign quota |
-| **Brokerage** | Private pools, non-exclusive listings, co-broker splits, owner confirmation before showings |
-| **Communication** | Zalo, phone, SMS as default rails |
-| **Payments** | Bank QR codes, local wallets |
-| **Offline-first** | Low-bandwidth optimized, aggressive compression, offline capture |
+| **Currency** | VND with local shorthand (triệu, tỷ) in formatters |
+| **Address** | Province/district/ward/project/block/unit custom fields on Property |
+| **Legal docs** | Custom Document Type with sổ đỏ, sổ hồng, permits, notarization, foreign quota checks |
+| **Brokerage** | Private pool visibility, non-exclusive listings, co-broker splits, owner confirmation workflow |
+| **Communication** | Zalo API integration, SMS gateway, phone as default communication log |
+| **Payments** | Bank QR codes, local wallet payment gateway integration |
+| **Language** | Vietnamese as primary, English as secondary — Frappe i18n |
 
-## 7. Current Status & Issues
+## 7. CRM Module (Forked from frappe/crm — Rebranded as Real Estate CRM)
 
-| # | Title | State |
+The CRM module is the **Broker's command center**, rebranded from frappe/crm with real estate-specific customizations:
+
+### Core CRM DocTypes (inherited)
+| DocType | Real Estate Usage |
+|---|---|
+| **Lead** | Owner sourcing leads, buyer inquiries, tenant inquiries |
+| **Opportunity** | Deal pipeline: active listing → viewing → offer → negotiation |
+| **Deal** | Closed sale, signed lease, rental agreement |
+| **Customer** | Property owners, residents, buyers, investors (typed by role) |
+| **Contact** | Household members, co-buyers, tenant occupants |
+| **Communication** | Zalo, SMS, email, phone call history |
+| **Email Template** | Automated broker/owner/resident communications |
+| **CRM Settings** | Assignment rules, pipeline stages, role-based visibility |
+
+### Real Estate Extensions
+- **Lead → Property** link — attach property of interest to a lead
+- **Opportunity stages:** Viewing Scheduled → Offer Received → Negotiating → Legal Review → Deposit Paid
+- **Deal types:** Sale, Long-term Lease, Short-term Rental
+- **Commission split** on Deal — multi-broker with percentage/amount tiers
+- **Private pool** visibility on linked listings
+
+## 8. ERPNext Back-Office Integration
+
+The following ERPNext modules serve each role:
+
+| ERPNext Module | Used By | Purpose |
 |---|---|---|
-| 60 | Cho thuê vị trí chớp nhoáng | OPEN |
-| 59 | API deployment verification | OPEN |
-| 56 | Building management API verification | OPEN |
-| 55 | Bán dịch vụ Bảo hiểm cháy nổ | OPEN |
-| 54 | Allow videos (TikTok integration) | OPEN |
-| 53 | Real World Assets Tokenization | OPEN |
-| 52 | Building Management Goals-Pack (18 goals DONE) | OPEN |
-| 51 | Quản lý chó mèo và tiêm phòng | OPEN |
-| 50 | Phần mềm Ban quản trị tòa nhà | OPEN |
-| 45 | Restructure the app (workspace bootstrap fix) | OPEN |
-| 40 | 100 improvements | OPEN |
+| **Asset** | Owner, Developer | Property as financial asset with depreciation |
+| **Selling** | Broker, Operator | Sales Invoice for commission, rent |
+| **Buying** | Operator | Vendor purchase orders for maintenance |
+| **Project** | Developer, Investor | Project management, milestone tracking |
+| **Task** | Operator, Developer | Maintenance tasks, permit tasks |
+| **Contract** | Owner, Broker, Resident | Lease agreements, listing agreements |
+| **CRM** | Broker | Customer, Contact, Lead, Opportunity, Deal |
+| **Accounts** | All | Payment Entry, Journal Entry, GL entries |
+| **HR** | Operator | Employee management for building staff |
+| **Maintenance** | Operator | Schedule, Visit, Warranty claims |
 
-**Development milestones:**
-- Phase 1-40+ completed via 176 architecture docs
-- Building Management module: 18/18 goals DONE (portfolio dashboard, vendor management, events calendar)
-- SSOT architecture fully implemented
-- Vietnam market stakeholder blueprint finalized
-- 100-prompt execution sequence completed
+## 9. Suggested Frappe App Structure
 
-## 8. Frappe Implementation Notes
+```
+apps/
+├── frappe (framework)
+├── erpnext
+├── realestate_crm (forked from frappe/crm)
+└── abn_realestate (custom)
+    ├── abn_realestate/
+    │   ├── doctypes/
+    │   │   ├── property/
+    │   │   ├── property_unit/
+    │   │   ├── property_listing/
+    │   │   ├── viewing_request/
+    │   │   ├── offer/
+    │   │   ├── commission_split/
+    │   │   ├── building/
+    │   │   ├── vietnam_document/  (sổ đỏ, sổ hồng, permits)
+    │   │   ├── building_event/
+    │   │   └── building_vendor/
+    │   ├── workspaces/  (role-specific desks)
+    │   │   ├── owner_workspace/
+    │   │   ├── resident_workspace/
+    │   │   ├── broker_workspace/
+    │   │   ├── operator_workspace/
+    │   │   ├── investor_workspace/
+    │   │   └── developer_workspace/
+    │   ├── reports/
+    │   │   ├── rent_roll/
+    │   │   ├── owner_pulse/
+    │   │   ├── broker_commission/
+    │   │   └── portfolio_summary/
+    │   ├── notification/ (Zalo, SMS, Email)
+    │   └── www/  (public marketplace web pages)
+    └── abn_realestate/ hooks, config
+```
 
-- **Current stack** is Flutter + Axum REST API — NOT Frappe
-- **Frappe migration candidate** — Real estate management maps well to ERPNext modules:
-  - **Property** → Frappe `Asset` + custom DocType
-  - **Owner/Resident** → Frappe `Customer` with role-based portals
-  - **Broker** → Frappe CRM (`Lead`, `Opportunity`, `Customer`)
-  - **Contracts** → Frappe `Contract` DocType
-  - **Maintenance** → Frappe `Maintenance Schedule`, `Maintenance Visit`
-  - **Finance** → ERPNext `Sales Invoice`, `Payment Entry`, `Journal Entry`
-  - **Developer/Investor** → Frappe `Project` with custom fields
-- Suggested: Create a custom Frappe app `abn_realestate` with:
-  - DocTypes: `Property`, `Property Unit`, `Property Listing`, `Viewing Request`, `Offer`, `Lease Agreement`, `Maintenance Request`, `Building`, `Vendor`
-  - Role-based portals: Owner Portal, Resident Portal, Broker Portal, Operator Portal
-  - Workflows for: Listing approval, lease signing, maintenance dispatch, commission settlement
-  - Integrations: VNeID, Zalo, Vietnam payment gateways
+## 10. Implementation Roadmap
 
-## 9. Documentation Inventory
+### Phase 1: Foundation (Frappe + CRM)
+- Set up Frappe bench with erpnext + realestate_crm
+- Create `abn_realestate` app skeleton
+- Implement Property, Property Unit, Property Listing DocTypes
+- Implement Building, Building Event, Building Vendor DocTypes
+- Set up Owner Portal with strategy board
+- Set up Public Marketplace web pages
 
-The repo has extensive documentation (176+ files in `docs/architecture/`):
-- **Architecture:** `system-architecture.md`, `ssot_architecture_map.md`, `data-flow.md`
-- **Stakeholder Blueprint:** `vietnam_market_stakeholder_blueprint.md` (456 lines)
-- **Role Analysis:** `role_day_in_life_analysis.md`
-- **User Journeys:** `journey-role-intent-platform.md`
-- **Testing:** `release_realism_checklist.md`, `execution_hardening_qa_release_phase38.md`
-- **Phase Execution:** 100+ phase docs covering owner, resident, broker, operator, investor, developer workflows
+### Phase 2: Broker Workflows (CRM)
+- Rebrand CRM Desk → "BROKER"
+- Customize Lead → Opportunity → Deal for real estate
+- Add Viewing Request, Offer, Commission Split DocTypes
+- Implement private pool visibility on listings
+- Set up Broker Portal with pipeline dashboard
 
-## 10. Infrastructure Dependencies
+### Phase 3: Operations (ERPNext)
+- Wire ERPNext Maintenance, Project, Asset modules
+- Implement rent roll, lease agreement workflows
+- Set up Operator Portal with leasing queue
+- Set up Resident Portal with rent pay + service requests
 
-| Dependency | Repository |
-|---|---|
-| API Server | `abn.apiserver.rust.axum` |
-| Database | `abn.postgresql` |
-| Auth | OneID (via Axum API server) |
+### Phase 4: Advanced (Investor + Developer)
+- Customize ERPNext Project for developer releases
+- Implement investor portfolio tracking dashboard
+- Set up Developer Portal with milestone/progress publishing
+- Add Vietnam compliance docs, foreign quota checks
+
+### Phase 5: Integration & Polish
+- Zalo integration for communications
+- Vietnam payment gateways (bank QR, Momo, VNPay)
+- e-sign integration for contracts
+- Notifications: push, email, SMS, Zalo
+- Dashboards and reports per role
+
+## 11. DocType Listing (Complete)
+
+### Custom DocTypes (`abn_realestate`)
+- `Property` — name, type, address (province/district/ward), legal_status, owner, geo_location, total_units, area
+- `Property Unit` — parent property, unit_number, floor, area, bedrooms, status (vacant/occupied/sold)
+- `Property Listing` — property/unit, listing_type (sale/rent), price, visibility (private/shared/public), status (draft/active/sold/leased)
+- `Viewing Request` — property, requester, scheduled_at, status, feedback, access_notes
+- `Offer` — property/listing, buyer/tenant, amount, terms, status (submitted/countered/accepted/rejected)
+- `Commission Split` — deal, broker(s), percentage, amount, status (pending/paid)
+- `Building` — name, address, number_of_units, management_company, amenities
+- `Building Event` — building, title, date, type, rsvp
+- `Building Vendor` — building, vendor (link to ERPNext Vendor), service_type, contract_end
+- `Vietnam Document` — property, document_type (sổ đỏ/sổ hồng/GCN/GPXD), document_number, issue_date, expiry_date, file
+
+### CRM DocTypes (realestate_crm — customized)
+- `Lead` — +property_link, +source_type (owner_sourcing/buyer_inquiry/tenant_lead)
+- `Opportunity` — +property_link, +listing_link, pipeline_stages (custom stages)
+- `Deal` — +deal_type (sale/lease/rental), +commission_total, +co_brokers table
+- `Customer` — role tags (Owner/Resident/Investor), +VND_credit_limit
+- `Contact` — +household_group for resident families
+
+### ERPNext DocTypes (used directly)
+- `Asset` — Property as depreciable asset
+- `Project` — Developer project, investor portfolio
+- `Task` — Maintenance work, permit tasks, project tasks
+- `Contract` — Lease agreement, listing agreement
+- `Maintenance Schedule` / `Maintenance Visit`
+- `Sales Invoice` — Rent, commission
+- `Payment Entry` — Deposits, rent payments
+- `Journal Entry` — Owner payouts, settlements
+- `Vendor` — Contractors, suppliers
